@@ -11,30 +11,17 @@ tipo_cancha = st.selectbox("Tipo de cancha:", ["Fútbol 11 (reglamentaria)"])
 ancho = st.number_input("Ancho (en metros)", min_value=1.0, step=0.5, value=68.0)
 largo = st.number_input("Largo (en metros)", min_value=1.0, step=0.5, value=105.0)
 
-# Opciones de modelo
-opciones = [
-    "Basic 15mm - $5.040/m²",
-    "Vivo 30mm - $8.900/m²",
-    "Royal 40mm - $8.415/m²",
-    "Prime 40mm - $10.900/m²",
-    "Otro (ingresar manualmente)"
-]
+# Selección de modelo y precio ingresado manualmente
+modelo_pasto = st.selectbox(
+    "Modelo de pasto sintético:",
+    ["Basic 15mm", "Vivo 30mm", "Royal 40mm", "Prime 40mm"]
+)
 
-modelo_pasto = st.selectbox("Modelo de pasto sintético:", opciones)
-
-# Diccionario de precios
-precio_pasto = {
-    "Basic 15mm - $5.040/m²": 5040,
-    "Vivo 30mm - $8.900/m²": 8900,
-    "Royal 40mm - $8.415/m²": 8415,
-    "Prime 40mm - $10.900/m²": 10900
-}
-
-# Precio seleccionado
-if modelo_pasto == "Otro (ingresar manualmente)":
-    precio_seleccionado = st.number_input("Ingresa el valor por m² del pasto sintético", min_value=1, step=1)
-else:
-    precio_seleccionado = precio_pasto[modelo_pasto]
+precio_seleccionado = st.number_input(
+    f"Ingresar precio por m² para el modelo {modelo_pasto}",
+    min_value=1,
+    step=1
+)
 
 rollo_ancho = st.radio("Ancho del rollo:", [2, 4])
 
@@ -91,6 +78,7 @@ if ancho and largo:
     # Resumen
     st.markdown("## Resumen")
     st.markdown(f"- Modelo de pasto: **{modelo_pasto}**")
+    st.markdown(f"- Precio ingresado: **${precio_seleccionado:,}/m²**")
     st.markdown(f"- Área: **{m2:.2f} m²**")
     st.markdown(f"- Rollos de {rollo_ancho}m: **{rollos}**")
     st.markdown(f"- Costo pasto: **${total_pasto:,.0f}**")
