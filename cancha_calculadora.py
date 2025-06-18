@@ -4,7 +4,7 @@ import matplotlib.patches as patches
 import numpy as np
 
 st.set_page_config(page_title="Cancha Deportiva - Calculadora V1", layout="centered")
-st.title("🏟️ Cancha Deportiva - Calculadora V1")
+st.title("Cancha Deportiva - Calculadora V1")
 
 # Datos de entrada
 tipo_cancha = st.selectbox("Tipo de cancha:", ["Fútbol 11 (reglamentaria)"])
@@ -75,10 +75,10 @@ if ancho and largo:
     st.pyplot(fig)
 
     # Resumen
-    st.markdown("## 🧾 Resumen")
+    st.markdown("## Resumen")
     st.markdown(f"- Modelo de pasto: **{modelo_pasto}**")
     st.markdown(f"- Área: **{m2:.2f} m²**")
     st.markdown(f"- Rollos de {rollo_ancho}m: **{rollos}**")
     st.markdown(f"- Costo pasto: **${total_pasto:,.0f}**")
     st.markdown(f"- Costo accesorios: **${total_accesorios:,.0f}**")
-    st.markdown(f"### ✅ Total estimado: **${total_final:,.0f}**")
+    st.markdown(f"### Total estimado: **${total_final:,.0f}**")
