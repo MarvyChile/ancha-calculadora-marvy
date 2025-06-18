@@ -1,4 +1,3 @@
-
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
@@ -62,8 +61,11 @@ if ancho and largo:
 
     total_final = total_pasto + costo_accesorios
 
-    # Visualización gráfica
-    fig, ax = plt.subplots(figsize=(10, 5))
+    # Visualización gráfica proporcional
+    fig_width = largo * 0.2  # escala visual ajustada
+    fig_height = ancho * 0.2
+
+    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
     ax.set_xlim(0, largo)
     ax.set_ylim(0, ancho)
     ax.set_aspect('equal')
