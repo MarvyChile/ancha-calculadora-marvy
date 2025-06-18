@@ -69,8 +69,27 @@ if ancho and largo:
     ax.add_patch(patches.Arc((11, ancho / 2), 18.3, 18.3, theta1=308, theta2=52, color='white', lw=2))
     ax.add_patch(patches.Arc((largo - 11, ancho / 2), 18.3, 18.3, theta1=128, theta2=232, color='white', lw=2))
 
-    for cx, cy in [(0, 0), (0, ancho), (largo, 0), (largo, ancho)]:
-        ax.add_patch(patches.Arc((cx, cy), 2, 2, theta1=0, theta2=90, color='white', lw=1))
+    # Líneas de esquina (córners)
+    radio_esquina = 1
+    corners = [
+        (0, 0, 0),               # inferior izquierda
+        (0, ancho, 270),         # superior izquierda
+        (largo, 0, 90),          # inferior derecha
+        (largo, ancho, 180)      # superior derecha
+    ]
+
+    for x, y, angle in corners:
+        corner_arc = patches.Arc(
+            (x, y),
+            width=2 * radio_esquina,
+            height=2 * radio_esquina,
+            angle=0,
+            theta1=angle,
+            theta2=angle + 90,
+            color='white',
+            lw=1.5
+        )
+        ax.add_patch(corner_arc)
 
     ax.set_title("Vista previa de cancha reglamentaria")
     ax.axis('off')
