@@ -1,5 +1,6 @@
 import streamlit as st
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import numpy as np
 
 st.set_page_config(page_title="Cancha Deportiva - Calculadora V1", layout="centered")
@@ -16,70 +17,43 @@ st.markdown("### Dimensiones de la cancha")
 ancho = st.number_input("Ancho (en metros)", min_value=1.0, step=0.5)
 largo = st.number_input("Largo (en metros)", min_value=1.0, step=0.5)
 
-# Modelo de pasto
-st.markdown("### Modelo de pasto sintético")
-modelo_pasto = st.selectbox(
-    "Selecciona el modelo:",
-    [
-        "Basic 15mm - $5.040/m²",
-        "Vivo 30mm - $8.900/m²",
-        "Royal 40mm - $8.415/m² (Oferta)",
-        "Prime 40mm - $10.900/m²"
-    ]
-)
+# Mostrar visual solo si hay dimensiones
+if ancho > 0 and largo > 0:
 
-# Ancho del rollo
-rollo_seleccionado = st.radio("Selecciona el ancho del rollo:", [2, 4])
-
-# Precios por modelo
-precios = {
-    "Basic 15mm - $5.040/m²": 5040,
-    "Vivo 30mm - $8.900/m²": 8900,
-    "Royal 40mm - $8.415/m² (Oferta)": 8415,
-    "Prime 40mm - $10.900/m²": 10900
-}
-
-# Cálculos
-if ancho and largo:
-    m2 = ancho * largo
-    total_pasto = m2 * precios[modelo_pasto]
-    cantidad_rollos = int(np.ceil(ancho / rollo_seleccionado) * np.ceil(largo / 25))
-
-    # Accesorios
-    st.markdown("### Accesorios opcionales")
-    arco = st.checkbox("Arcos (x2)", value=False)
-    malla = st.checkbox("Malla perimetral", value=False)
-    pintura = st.checkbox("Pintura demarcación", value=False)
-
-    costo_accesorios = 0
-    if arco:
-        costo_accesorios += 120000
-    if malla:
-        costo_accesorios += m2 * 500
-    if pintura:
-        costo_accesorios += 25000
-
-    total_final = total_pasto + costo_accesorios
-
-    # Visualización gráfica proporcional
-    fig_width = largo * 0.2  # escala visual ajustada
-    fig_height = ancho * 0.2
-
+    # Cálculos visuales
+    fig_width = largo * 0.15
+    fig_height = ancho * 0.15
     fig, ax = plt.subplots(figsize=(fig_width, fig_height))
     ax.set_xlim(0, largo)
     ax.set_ylim(0, ancho)
     ax.set_aspect('equal')
-    ax.add_patch(plt.Rectangle((0, 0), largo, ancho, facecolor='green', edgecolor='white'))
+
+    # Pasto
+    ax.add_patch(patches.Rectangle((0, 0), largo, ancho, facecolor='green'))
+
+    # Línea perimetral
+    ax.plot([0, largo], [0, 0], color='white', linewidth=2)
+    ax.plot([0, largo], [ancho, ancho], color='white', linewidth=2)
+    ax.plot([0, 0], [0, ancho], color='white', linewidth=2)
+    ax.plot([largo, largo], [0, ancho], color='white', linewidth=2)
+
+    # Línea media
+    ax.plot([largo / 2, largo / 2], [0, ancho], color='white', linestyle='-', linewidth=2)
+
+    # Círculo central
+    circulo = patches.Circle((largo / 2, ancho / 2), radius=3, fill=False, color='white', linewidth=2)
+    ax.add_patch(circulo)
+
+    # Áreas chicas (5 metros desde línea y 3 de ancho)
+    area_largo = 5
+    area_ancho = 3
+    ax.add_patch(patches.Rectangle((0, (ancho - area_ancho) / 2), area_largo, area_ancho, fill=False, edgecolor='white', linewidth=2))
+    ax.add_patch(patches.Rectangle((largo - area_largo, (ancho - area_ancho) / 2), area_largo, area_ancho, fill=False, edgecolor='white', linewidth=2))
+
+    # Punto penal
+    ax.plot([6], [ancho / 2], 'wo')  # lado izquierdo
+    ax.plot([largo - 6], [ancho / 2], 'wo')  # lado derecho
+
     ax.set_title("Vista previa de la cancha")
     ax.axis('off')
     st.pyplot(fig)
-
-    # Resumen
-    st.markdown("## 🧾 Resumen")
-    st.markdown(f"- Tipo de cancha: **{tipo_cancha}**")
-    st.markdown(f"- Modelo de pasto: **{modelo_pasto}**")
-    st.markdown(f"- Superficie: **{m2:.2f} m²**")
-    st.markdown(f"- Rollos de {rollo_seleccionado}m: **{cantidad_rollos}**")
-    st.markdown(f"- Costo pasto: **${total_pasto:,.0f}**")
-    st.markdown(f"- Costo accesorios: **${costo_accesorios:,.0f}**")
-    st.markdown(f"### ✅ Total estimado: **${total_final:,.0f}**")
