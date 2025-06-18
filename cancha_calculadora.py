@@ -11,12 +11,13 @@ tipo_cancha = st.selectbox("Tipo de cancha:", ["Fútbol 11 (reglamentaria)"])
 ancho = st.number_input("Ancho (en metros)", min_value=1.0, step=0.5, value=68.0)
 largo = st.number_input("Largo (en metros)", min_value=1.0, step=0.5, value=105.0)
 
-# Selección de modelo y precio ingresado manualmente
+# Lista de modelos actualizada
 modelo_pasto = st.selectbox(
     "Modelo de pasto sintético:",
-    ["Basic 15mm", "Vivo 30mm", "Royal 40mm", "Prime 40mm"]
+    ["Basic 15mm", "Vivo 30mm", "Royal 40mm", "Prime 40mm", "Stemgrass 50mm"]
 )
 
+# Ingreso manual del precio
 precio_seleccionado = st.number_input(
     f"Ingresar precio por m² para el modelo {modelo_pasto}",
     min_value=1,
