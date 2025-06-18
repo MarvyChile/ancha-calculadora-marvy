@@ -1,106 +1,63 @@
-import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import numpy as np
 
-st.set_page_config(page_title="Cancha Deportiva - Calculadora V1", layout="centered")
-st.title("Cancha Deportiva - Calculadora V1")
+# Dimensiones reglamentarias
+largo = 105  # en metros
+ancho = 68   # en metros
 
-# Datos de entrada
-tipo_cancha = st.selectbox("Tipo de cancha:", ["Fútbol 11 (reglamentaria)"])
-ancho = st.number_input("Ancho (en metros)", min_value=1.0, step=0.5, value=68.0)
-largo = st.number_input("Largo (en metros)", min_value=1.0, step=0.5, value=105.0)
+# Crear figura con proporción real
+fig, ax = plt.subplots(figsize=(12, 8))
+ax.set_xlim(0, largo)
+ax.set_ylim(0, ancho)
+ax.set_aspect('equal')
 
-# Lista de modelos actualizada
-modelo_pasto = st.selectbox(
-    "Modelo de pasto sintético:",
-    ["Basic 15mm", "Vivo 30mm", "Royal 40mm", "Prime 40mm", "Stemgrass 50mm"]
-)
+# Fondo con franjas alternadas (14 zonas)
+for i in range(14):
+    color = '#4CAF50' if i % 2 == 0 else '#43A047'
+    ax.add_patch(patches.Rectangle((i * largo / 14, 0), largo / 14, ancho, color=color))
 
-# Ingreso manual del precio
-precio_seleccionado = st.number_input(
-    f"Ingresar precio por m² para el modelo {modelo_pasto}",
-    min_value=1,
-    step=1
-)
+# Líneas perimetrales
+ax.plot([0, largo], [0, 0], color='white', lw=2)
+ax.plot([0, largo], [ancho, ancho], color='white', lw=2)
+ax.plot([0, 0], [0, ancho], color='white', lw=2)
+ax.plot([largo, largo], [0, ancho], color='white', lw=2)
 
-rollo_ancho = st.radio("Ancho del rollo:", [2, 4])
+# Línea media y círculo central
+ax.plot([largo / 2, largo / 2], [0, ancho], color='white', lw=2)
+ax.add_patch(patches.Circle((largo / 2, ancho / 2), 9.15, fill=False, edgecolor='white', lw=2))
+ax.plot([largo / 2], [ancho / 2], 'wo')  # punto central
 
-# Accesorios
-arcos = st.checkbox("Arcos (x2)", value=False)
-malla = st.checkbox("Malla perimetral", value=False)
-pintura = st.checkbox("Pintura de demarcación", value=False)
+# Áreas grandes
+for x in [0, largo - 16.5]:
+    ax.add_patch(patches.Rectangle((x, (ancho - 40.32) / 2), 16.5, 40.32, fill=False, edgecolor='white', lw=2))
 
-if ancho and largo:
-    m2 = ancho * largo
-    rollos = int(np.ceil(ancho / rollo_ancho) * np.ceil(largo / 25))
-    total_pasto = m2 * precio_seleccionado
+# Áreas chicas
+for x in [0, largo - 5.5]:
+    ax.add_patch(patches.Rectangle((x, (ancho - 18.32) / 2), 5.5, 18.32, fill=False, edgecolor='white', lw=2))
 
-    total_accesorios = 0
-    if arcos: total_accesorios += 120000
-    if malla: total_accesorios += m2 * 500
-    if pintura: total_accesorios += 25000
-    total_final = total_pasto + total_accesorios
+# Puntos penales
+ax.plot([11], [ancho / 2], 'wo')             # lado izquierdo
+ax.plot([largo - 11], [ancho / 2], 'wo')      # lado derecho
 
-    # Visualización de cancha reglamentaria
-    fig, ax = plt.subplots(figsize=(largo * 0.1, ancho * 0.1))
-    ax.set_xlim(0, largo)
-    ax.set_ylim(0, ancho)
-    ax.set_aspect('equal')
-    ax.add_patch(patches.Rectangle((0, 0), largo, ancho, facecolor='green'))
+# Arcos de penal (semicírculos)
+ax.add_patch(patches.Arc((11, ancho / 2), 18.3, 18.3, theta1=308, theta2=52, edgecolor='white', lw=2))
+ax.add_patch(patches.Arc((largo - 11, ancho / 2), 18.3, 18.3, theta1=128, theta2=232, edgecolor='white', lw=2))
 
-    # Líneas reglamentarias
-    ax.plot([0, largo], [0, 0], color='white', lw=2)
-    ax.plot([0, largo], [ancho, ancho], color='white', lw=2)
-    ax.plot([0, 0], [0, ancho], color='white', lw=2)
-    ax.plot([largo, largo], [0, ancho], color='white', lw=2)
+# Córners (cuartos de círculo)
+radio_esquina = 1
+corners = [
+    (0, 0, 0), (0, ancho, 270),
+    (largo, 0, 90), (largo, ancho, 180)
+]
+for x, y, angle in corners:
+    corner_arc = patches.Arc((x, y), 2 * radio_esquina, 2 * radio_esquina, angle=0, theta1=angle, theta2=angle + 90, edgecolor='white', lw=1.5)
+    ax.add_patch(corner_arc)
 
-    ax.plot([largo / 2, largo / 2], [0, ancho], color='white', lw=2)
-    ax.add_patch(patches.Circle((largo / 2, ancho / 2), 9.15, fill=False, edgecolor='white', lw=2))
-    ax.plot([largo / 2], [ancho / 2], 'wo')
+# Título
+ax.set_title("Dimensiones para una cancha de fútbol 11", fontsize=14)
 
-    for x in [0, largo - 16.5]:
-        ax.add_patch(patches.Rectangle((x, (ancho - 40.32) / 2), 16.5, 40.32, fill=False, edgecolor='white', lw=2))
-    for x in [0, largo - 5.5]:
-        ax.add_patch(patches.Rectangle((x, (ancho - 18.32) / 2), 5.5, 18.32, fill=False, edgecolor='white', lw=2))
+# Quitar ejes
+ax.axis('off')
 
-    ax.plot([11], [ancho / 2], 'wo')
-    ax.plot([largo - 11], [ancho / 2], 'wo')
-    ax.add_patch(patches.Arc((11, ancho / 2), 18.3, 18.3, theta1=308, theta2=52, color='white', lw=2))
-    ax.add_patch(patches.Arc((largo - 11, ancho / 2), 18.3, 18.3, theta1=128, theta2=232, color='white', lw=2))
-
-    # Líneas de esquina (córners)
-    radio_esquina = 1
-    corners = [
-        (0, 0, 0),               # inferior izquierda
-        (0, ancho, 270),         # superior izquierda
-        (largo, 0, 90),          # inferior derecha
-        (largo, ancho, 180)      # superior derecha
-    ]
-
-    for x, y, angle in corners:
-        corner_arc = patches.Arc(
-            (x, y),
-            width=2 * radio_esquina,
-            height=2 * radio_esquina,
-            angle=0,
-            theta1=angle,
-            theta2=angle + 90,
-            color='white',
-            lw=1.5
-        )
-        ax.add_patch(corner_arc)
-
-    ax.set_title("Vista previa de cancha reglamentaria")
-    ax.axis('off')
-    st.pyplot(fig)
-
-    # Resumen
-    st.markdown("## Resumen")
-    st.markdown(f"- Modelo de pasto: **{modelo_pasto}**")
-    st.markdown(f"- Precio ingresado: **${precio_seleccionado:,}/m²**")
-    st.markdown(f"- Área: **{m2:.2f} m²**")
-    st.markdown(f"- Rollos de {rollo_ancho}m: **{rollos}**")
-    st.markdown(f"- Costo pasto: **${total_pasto:,.0f}**")
-    st.markdown(f"- Costo accesorios: **${total_accesorios:,.0f}**")
-    st.markdown(f"### Total estimado: **${total_final:,.0f}**")
+# Mostrar
+plt.show()
