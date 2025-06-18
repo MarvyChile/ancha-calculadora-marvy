@@ -11,16 +11,30 @@ tipo_cancha = st.selectbox("Tipo de cancha:", ["Fútbol 11 (reglamentaria)"])
 ancho = st.number_input("Ancho (en metros)", min_value=1.0, step=0.5, value=68.0)
 largo = st.number_input("Largo (en metros)", min_value=1.0, step=0.5, value=105.0)
 
-modelo_pasto = st.selectbox(
-    "Modelo de pasto sintético:",
-    ["Basic 15mm - $5.040/m²", "Vivo 30mm - $8.900/m²", "Royal 40mm - $8.415/m²", "Prime 40mm - $10.900/m²"]
-)
+# Opciones de modelo
+opciones = [
+    "Basic 15mm - $5.040/m²",
+    "Vivo 30mm - $8.900/m²",
+    "Royal 40mm - $8.415/m²",
+    "Prime 40mm - $10.900/m²",
+    "Otro (ingresar manualmente)"
+]
+
+modelo_pasto = st.selectbox("Modelo de pasto sintético:", opciones)
+
+# Diccionario de precios
 precio_pasto = {
     "Basic 15mm - $5.040/m²": 5040,
     "Vivo 30mm - $8.900/m²": 8900,
     "Royal 40mm - $8.415/m²": 8415,
     "Prime 40mm - $10.900/m²": 10900
-}[modelo_pasto]
+}
+
+# Precio seleccionado
+if modelo_pasto == "Otro (ingresar manualmente)":
+    precio_seleccionado = st.number_input("Ingresa el valor por m² del pasto sintético", min_value=1, step=1)
+else:
+    precio_seleccionado = precio_pasto[modelo_pasto]
 
 rollo_ancho = st.radio("Ancho del rollo:", [2, 4])
 
@@ -32,7 +46,7 @@ pintura = st.checkbox("Pintura de demarcación", value=False)
 if ancho and largo:
     m2 = ancho * largo
     rollos = int(np.ceil(ancho / rollo_ancho) * np.ceil(largo / 25))
-    total_pasto = m2 * precio_pasto
+    total_pasto = m2 * precio_seleccionado
 
     total_accesorios = 0
     if arcos: total_accesorios += 120000
